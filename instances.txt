@@ -1,0 +1,5 @@
+RESERVATION	r-3da73a5f	610905949222	kkhan
+INSTANCE	i-395bd35f	ami-e565ba8c	ec2-23-20-175-105.compute-1.amazonaws.com	ip-10-194-10-132.ec2.internal	running	kkhan-ec2	0	m1.medium	2012-05-14T14:51:22+0000	us-east-1c	aki-88aa75e1			monitoring-disabled	23.20.175.105	10.194.10.132		ebs					paravirtual	xen		sg-1e7cf577	default
+BLOCKDEVICE	/dev/sda1	vol-862c2ce9	2012-05-14T14:51:39.000Z	true
+TAG	instance	i-395bd35f	Name	Slave1
+TAG	instance	i-395bd35f	Type	Slave
