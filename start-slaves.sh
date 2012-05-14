@@ -3,15 +3,13 @@
 #Update this when the version changes
 BUILT_JBOSS=jboss-as-7.1.2.Final-SNAPSHOT
 
-ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=Slave" > instances.txt
-
 myrev=`cat ../jboss-as/build/target/current-rev.txt`
 echo My revision: $myrev
 
 IFS=$'\n'
 slave_addr=
 slave_host=
-for line in `cat instances.txt`
+for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=Slave"`
 do
     if [[ $line == INSTANCE* ]] ; then
        slave_addr=$(echo $line|awk '{print $5}')
@@ -37,6 +35,7 @@ do
 	  fi
 
           echo start slave
+          ssh $slave_addr 'cd ~/slave/$BUILT_JBOSS/bin; killall -9 java ; nohup ./domain.sh &'
 
 	  slave_host=
 	  slave_addr=
