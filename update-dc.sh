@@ -26,7 +26,7 @@ else
    echo Building project
    #mvn clean -pl build -am 
    #mvn install -pl build -am
-   zip -r jboss-as.zip build/target/$BUILT_JBOSS
+   zip -r build/target/jboss-as.zip build/target/$BUILT_JBOSS
 fi
 
 echo Writing current rev...
