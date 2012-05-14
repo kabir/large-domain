@@ -24,12 +24,13 @@ else
    echo Getting the most recent sources
    git reset --hard origin/master
    echo Building project
-   mvn clean -pl build -am 
-   mvn install -pl build -am
+   #mvn clean -pl build -am 
+   #mvn install -pl build -am
+   zip -r jboss-as.zip build/target/$BUILT_JBOSS
 fi
 
 echo Writing current rev...
-echo $CURRENT_REV > build/target/$BUILT_JBOSS/bin/current-rev.txt
+echo $CURRENT_REV > build/target/current-rev.txt
 
 
 cd $ORIGINAL_PATH
