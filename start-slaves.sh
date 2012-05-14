@@ -33,7 +33,7 @@ do
 	      ssh $slave_addr rm -rf slave/*
 	      scp ../jboss-as/build/target/current-rev.txt ec2-user@$slave_addr:/home/ec2-user/slave/current-rev.txt
 	      scp ../jboss-as/build/target/jboss-as.zip $slave_addr:/home/ec2-user/slave/jboss-as.zip
-	      ssh $slave_addr unzip /home/ec2_user/slave/jboss-as.zip -d /home/ec2_user/slave
+	      ssh $slave_addr 'unzip ~/slave/jboss-as.zip -d ~/slave'
 	  fi
 
           echo start slave
