@@ -24,7 +24,8 @@ else
    echo Getting the most recent sources
    git reset --hard origin/master
    echo Building project
-   mvn clean install -pl build -am 
+   mvn clean -pl build -am 
+   mvn install -pl build -am
 fi
 
 echo Writing current rev...
