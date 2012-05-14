@@ -25,7 +25,7 @@ do
 
           #Get the slave's revision
           rm temp-rev.txt
-	  scp ec2-user@$1/home/ec2-user/slave/current-rev.txt temp-rev.txt
+	  scp ec2-user@$slave_addr:/home/ec2-user/slave/current-rev.txt temp-rev.txt
 	  slaverev=`cat temp-rev.txt`
 
 	  if [[ $slaverev != $myrev ]] ; then
