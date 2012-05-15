@@ -24,8 +24,8 @@ else
    echo Getting the most recent sources
    git reset --hard origin/master
    echo Building project
-   #mvn clean -pl build -am 
-   #mvn install -pl build -am
+   mvn clean -pl build -am 
+   mvn install -pl build -am
    cp ../large-domain/config/host-slave.xml build/target/$BUILT_JBOSS/domain/configuration
    cp ../large-domain/config/host.xml build/target/$BUILT_JBOSS/domain/configuration
    cp ../large-domain/config/mgmt-users.properties build/target/$BUILT_JBOSS/domain/configuration
