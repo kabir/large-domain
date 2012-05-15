@@ -62,7 +62,7 @@ do
 
           echo start slave
 	  #Go to the slave's bin directory, kill all running java processes and start the domain in the background
-          ssh  -o "StrictHostKeyChecking no" $slave_addr 'cd ~/slave/'$BUILT_JBOSS'/bin; killall -9 java ; nohup ./domain.sh --host-config=host-slave.xml -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 -Djboss.slave.name='$slave-host' -Djboss.domain.master.address='$dc_addr' < /dev/null > /dev/null 2>/dev/null &'
+          ssh  -o "StrictHostKeyChecking no" $slave_addr 'cd ~/slave/'$BUILT_JBOSS'/bin; killall -9 java ; nohup ./domain.sh --host-config=host-slave.xml -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 -Djboss.domain.master.address='$dc_addr' < /dev/null > /dev/null 2>/dev/null &'
 
           #No idea if this makes any difference, but clear these variables
 	  slave_host=
