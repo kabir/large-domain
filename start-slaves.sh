@@ -24,6 +24,8 @@ echo My revision: $myrev
 slave_addr=
 slave_host=
 #Read the slave entries
+echo "Reading/configuring/starting each slave..."
+
 for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=Slave"`
 do
     if [[ $line == INSTANCE* ]] ; then
@@ -40,9 +42,10 @@ do
 	  echo Contacting $slave_host $slave_addr
 
           #Get the slave's revision
-          rm temp-rev.txt
-	  scp ec2-user@$slave_addr:/home/ec2-user/slave/current-rev.txt temp-rev.txt
+          rm -r temp-rev.txt
+	  scp ec2-user@$slave_addr:~/slave/current-rev.txt temp-rev.txt
 	  slaverev=`cat temp-rev.txt`
+	  echo slave rev: $slaverev
 
 	  if [[ $slaverev != $myrev ]] ; then
 	      #Slave revision was different - copy files to slave
@@ -67,3 +70,5 @@ do
        fi
     fi
 done
+
+rm -r temp-rev.txt
