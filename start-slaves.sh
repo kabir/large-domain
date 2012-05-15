@@ -9,7 +9,7 @@ dc_addr=
 echo "Determining the domain controller's (i.e. me) internal address..."
 
 
-for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=Slave"`
+for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=DC"`
 do
     if [[ $line == INSTANCE* ]] ; then
            #Line starts with INSTANCE - get the slave internal address
@@ -59,7 +59,7 @@ do
 
           echo start slave
 	  #Go to the slave's bin directory, kill all running java processes and start the domain in the background
-          ssh  -o "StrictHostKeyChecking no" $slave_addr 'cd ~/slave/$BUILT_JBOSS/bin; pwd ; killall -9 java ; nohup ./domain.sh -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 -Djboss.slave.name=$slave-host -Djboss.domain.master.address=$dc_addr < /dev/null > /dev/null 2>/dev/null &'
+          ssh  -o "StrictHostKeyChecking no" $slave_addr 'cd ~/slave/'$BUILT_JBOSS'/bin; pwd ; killall -9 java ; nohup ./domain.sh -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 -Djboss.slave.name='$slave-host' -Djboss.domain.master.address='$dc_addr' < /dev/null > /dev/null 2>/dev/null &'
 
           #No idea if this makes any difference, but clear these variables
 	  slave_host=
