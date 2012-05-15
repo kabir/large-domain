@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Update this when the version changes
-BUILT_JBOSS=jboss-as-7.1.2.Final-SNAPSHOT
+BUILT_JBOSS=jboss-as-7.2.0.Alpha1-SNAPSHOT
 
 IFS=$'\n'
 dc_addr=
