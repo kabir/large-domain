@@ -57,7 +57,8 @@ do
 	      #Copy the zipped AS installation to the slave
 	      scp ../jboss-as/build/target/jboss-as.zip $slave_addr:/home/ec2-user/slave/jboss-as.zip
 	      #Unzip the zipped AS installation
-	      ssh $slave_addr 'unzip ~/slave/jboss-as.zip -d ~/slave'
+	      echo unzipping as installation on $slave_addr
+	      ssh $slave_addr 'unzip -q ~/slave/jboss-as.zip -d ~/slave'
 	  fi
 
           echo start slave

@@ -49,7 +49,7 @@ then
    cp ../large-domain/config/mgmt-users.properties build/target/$BUILT_JBOSS/domain/configuration
    cd build/target
    rm jboss-as.zip
-   zip -r jboss-as.zip $BUILT_JBOSS
+   zip -qr jboss-as.zip $BUILT_JBOSS
    cd ../..
 fi
 
