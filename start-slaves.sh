@@ -3,11 +3,18 @@
 #Update this when the version changes
 BUILT_JBOSS=jboss-as-7.2.0.Alpha1-SNAPSHOT
 
+echo ========================================================
+echo Start slave script
+echo ========================================================
+
 IFS=$'\n'
 dc_addr=
 #Read the DC
 echo "Determining the domain controller's (i.e. me) internal address..."
 
+#Delete the work dir
+rm -rf work
+mkdir work
 
 for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=DC"`
 do
@@ -39,12 +46,13 @@ do
           #Got the slave name
           slave_host=$(echo $line|awk '{print $5}')
 	  
+	  echo ----------------------------------------
 	  echo Contacting $slave_host $slave_addr
 
           #Get the slave's revision
-          rm -r temp-rev.txt
-	  scp ec2-user@$slave_addr:~/slave/current-rev.txt temp-rev.txt
-	  slaverev=`cat temp-rev.txt`
+          rm -f work/temp-rev.txt
+	  scp ec2-user@$slave_addr:~/slave/current-rev.txt work/temp-rev.txt
+	  slaverev=`cat work/temp-rev.txt`
 	  echo slave rev: $slaverev
 
 	  if [[ $slaverev != $myrev ]] ; then
@@ -53,13 +61,20 @@ do
 	      #Remove the existing files in the slave folder
 	      ssh $slave_addr rm -rf slave/*
 	      #Copy the current rev to the slave
-	      scp ../jboss-as/build/target/current-rev.txt ec2-user@$slave_addr:/home/ec2-user/slave/current-rev.txt
+	      scp ../jboss-as/build/target/current-rev.txt ec2-user@$slave_addr:~/slave/current-rev.txt
 	      #Copy the zipped AS installation to the slave
-	      scp ../jboss-as/build/target/jboss-as.zip $slave_addr:/home/ec2-user/slave/jboss-as.zip
+	      scp ../jboss-as/build/target/jboss-as.zip $slave_addr:~/slave/jboss-as.zip
 	      #Unzip the zipped AS installation
 	      echo unzipping as installation on $slave_addr
 	      ssh $slave_addr 'unzip -q ~/slave/jboss-as.zip -d ~/slave'
 	  fi
+
+          #Overwrite the host name in host-slave.xml with the name of this slave from $slave_host (i.e. from the Name tag)
+	  rm -f work/temp-host-slave.xml
+	  cp config/host-slave.xml work/temp-host-slave.xml
+	  perl -pi -e 's/__HOST_NAME__/'$slave_host'/g' work/temp-host-slave.xml
+	  #ssh -o "StrictHostKeyChecking no" $slave_addr 'rm ~/'$BUILT_JBOSS'/domain/configuration/host-slave.xml'
+	  scp work/temp-host-slave.xml $slave_addr:~/slave/$BUILT_JBOSS/domain/configuration/host-slave.xml
 
           echo start slave
 	  #Go to the slave's bin directory, kill all running java processes and start the domain in the background
@@ -72,4 +87,4 @@ do
     fi
 done
 
-rm -r temp-rev.txt
+rm -rf work

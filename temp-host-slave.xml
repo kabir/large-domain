@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<host xmlns="urn:jboss:domain:1.3" name="__HOST_NAME__">
+<host xmlns="urn:jboss:domain:1.3" name="SlaveA">
 
     <management>
         <security-realms>
