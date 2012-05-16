@@ -13,7 +13,7 @@ for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "
 do
     if [[ $line == INSTANCE* ]] ; then
            #Line starts with INSTANCE - get the slave internal address
-          dc_addr=$(echo $line|awk '{print $5}')
+          dc_addr=$(echo $line|awk '{print $15}')
     fi
 done
 echo My internal address: $dc_addr
@@ -30,7 +30,7 @@ for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "
 do
     if [[ $line == INSTANCE* ]] ; then
        #Line starts with INSTANCE - get the slave internal address
-       slave_addr=$(echo $line|awk '{print $5}')
+       slave_addr=$(echo $line|awk '{print $15}')
     fi
     if [[ $line == TAG* ]] ; then
        #Line starts with TAG - look for slave name
