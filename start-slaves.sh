@@ -73,7 +73,7 @@ do
 
               #Get the slave's revision
               rm -f work/temp-rev.txt
-	      scp ec2-user@$slave_addr:~/slave/current-rev.txt work/temp-rev.txt
+	      scp -o "StrictHostKeyChecking no" ec2-user@$slave_addr:~/slave/current-rev.txt work/temp-rev.txt
 	      slaverev=`cat work/temp-rev.txt`
 	      echo slave rev: $slaverev
 
