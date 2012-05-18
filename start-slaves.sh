@@ -17,33 +17,39 @@ do
        START=1
     elif [[ "$var" == "stop" ]] ; then
        STOP=1
+    elif [[ "$var" == "kill" ]] ; then
+       KILL=1
     else
         echo $var not supported, supported options: skip.copy,force.copy
     fi
 done
 
-if [[ $STOP != "1" ]] && [[ $START != "1" ]] ; then
+if [[ $STOP != "1" ]] && [[ $START != "1" ]] && [[ $KILL != "1" ]] ; then
     START=1
-    STOP=1
+    KILL=1
 fi
 
 IFS=$'\n'
-dc_addr=
-#Read the DC
-echo "Determining the domain controller's (i.e. me) internal address..."
+
+if [[ $START == "1" ]] ; then
+    dc_addr=
+    #Read the DC
+    echo "Determining the domain controller's (i.e. me) internal address..."
+
+
+    for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=DC"`
+    do
+        if [[ $line == INSTANCE* ]] ; then
+            #Line starts with INSTANCE - get the slave internal address
+            dc_addr=$(echo $line|awk '{print $15}')
+        fi
+    done
+    echo My internal address: $dc_addr
+fi
 
 #Delete the work dir
 rm -rf work
 mkdir work
-
-for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=DC"`
-do
-    if [[ $line == INSTANCE* ]] ; then
-           #Line starts with INSTANCE - get the slave internal address
-          dc_addr=$(echo $line|awk '{print $15}')
-    fi
-done
-echo My internal address: $dc_addr
 
 myrev=`cat ../jboss-as/build/target/current-rev.txt`
 echo My revision: $myrev
@@ -95,15 +101,20 @@ do
 	      rm -f work/temp-host-slave.xml
 	      cp config/host-slave.xml work/temp-host-slave.xml
 	      perl -pi -e 's/__HOST_NAME__/'$slave_host'/g' work/temp-host-slave.xml
-	      #ssh -o "StrictHostKeyChecking no" $slave_addr 'rm ~/'$BUILT_JBOSS'/domain/configuration/host-slave.xml'
 	      scp work/temp-host-slave.xml $slave_addr:~/slave/$BUILT_JBOSS/domain/configuration/host-slave.xml
 	  fi 
 
 	  #Go to the slave's bin directory, kill all running java processes and start the domain in the background
 
+	  if [[ $KILL == "1" ]] ; then 
+              echo kill slave
+              ssh  -o "StrictHostKeyChecking no" $slave_addr 'killall -9 java'
+	  fi
 	  if [[ $STOP == "1" ]] ; then 
               echo stop slave
-              ssh  -o "StrictHostKeyChecking no" $slave_addr 'killall -9 java'
+	      remote_pid=$(ssh $slave_addr 'ps aux | grep process-controller | grep java' | grep process-controller | grep java  | awk '{print $2}' | sort | awk 'NR==1{print $1}')
+	      echo $remote_pid
+	      ssh $slave_addr 'kill '$remote_pid''
 	  fi
 	  if [[ $START == "1" ]] ; then 
               echo start slave
