@@ -16,16 +16,22 @@ do
     fi
 done
 
+if [[ -z "${GIT_BRANCH+x}" ]] ; then
+    GIT_BRANCH=master
+fi
+
+echo $GIT_BRANCH
+
 ORIGINAL_PATH=`pwd`
 echo $ORIGINAL_PATH
 
 cd ../jboss-as
-
+git checkout $GIT_BRANCH
 CURRENT_REV=`git rev-parse HEAD`
 
 echo Refreshing the source checkout...
 git fetch --quiet origin
-UPDATED_REV=`git rev-parse origin/master`
+UPDATED_REV=`git rev-parse origin/$GIT_BRANCH`
 
 echo My revision:       $CURRENT_REV
 echo Upstream revision: $UPDATED_REV
@@ -35,7 +41,7 @@ then
 #   echo Current copy up to date
 #else
    echo Getting the most recent sources
-   git reset --hard origin/master
+   git reset --hard origin/$GIT_BRANCH
    echo Building project
    if [[ $VAR_CLEAN == "1" ]] ; then
        mvn clean -pl build -am 
