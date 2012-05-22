@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Update this when the version changes
-BUILT_JBOSS=jboss-as-7.2.0.Alpha1-SNAPSHOT
-
 echo ========================================================
 echo Start slave script
 echo ========================================================
@@ -101,7 +98,7 @@ do
 	      rm -f work/temp-host-slave.xml
 	      cp config/host-slave.xml work/temp-host-slave.xml
 	      perl -pi -e 's/__HOST_NAME__/'$slave_host'/g' work/temp-host-slave.xml
-	      scp work/temp-host-slave.xml $slave_addr:~/slave/$BUILT_JBOSS/domain/configuration/host-slave.xml
+	      scp work/temp-host-slave.xml $slave_addr:~/slave/jboss-as/domain/configuration/host-slave.xml
 	  fi 
 
 	  #Go to the slave's bin directory, kill all running java processes and start the domain in the background
@@ -118,7 +115,7 @@ do
 	  fi
 	  if [[ $START == "1" ]] ; then 
               echo start slave
-              ssh  -o "StrictHostKeyChecking no" $slave_addr 'cd ~/slave/'$BUILT_JBOSS'/bin; nohup ./domain.sh --host-config=host-slave.xml -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 -Djboss.domain.master.address='$dc_addr' < /dev/null > /dev/null 2>/dev/null &'
+              ssh  -o "StrictHostKeyChecking no" $slave_addr 'cd ~/slave/jboss-as/bin; nohup ./domain.sh --host-config=host-slave.xml -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 -Djboss.domain.master.address='$dc_addr' < /dev/null > /dev/null 2>/dev/null &'
 	  fi
 
           #No idea if this makes any difference, but clear these variables

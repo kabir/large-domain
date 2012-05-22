@@ -1,7 +1,10 @@
 #!/bin/bash
 
 #Update this when the version changes
-BUILT_JBOSS=jboss-as-7.2.0.Alpha1-SNAPSHOT
+if [[ -z "$JBOSS_VERSION" ]] ; then
+    echo Set the target jboss version using the JBOSS_VERSION environment variable
+fi
+BUILT_JBOSS=jboss-as-$JBOSS_VERSION
 
 for var in "$@"
 do
@@ -50,12 +53,14 @@ then
        mvn install -pl build -am
    fi
 
-   cp ../large-domain/config/host-slave.xml build/target/$BUILT_JBOSS/domain/configuration
-   cp ../large-domain/config/host.xml build/target/$BUILT_JBOSS/domain/configuration
-   cp ../large-domain/config/mgmt-users.properties build/target/$BUILT_JBOSS/domain/configuration
+   mv build/target/$BUILT_JBOSS build/target/jboss-as
+
+   cp ../large-domain/config/host-slave.xml build/target/jboss-as/domain/configuration
+   cp ../large-domain/config/host.xml build/target/jboss-as/domain/configuration
+   cp ../large-domain/config/mgmt-users.properties build/target/jboss-as/domain/configuration
    cd build/target
    rm jboss-as.zip
-   zip -qr jboss-as.zip $BUILT_JBOSS
+   zip -qr jboss-as.zip jboss-as
    cd ../..
 fi
 
