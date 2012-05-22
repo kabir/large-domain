@@ -29,12 +29,20 @@ ORIGINAL_PATH=`pwd`
 echo $ORIGINAL_PATH
 
 cd ../jboss-as
-git checkout $GIT_BRANCH
-CURRENT_REV=`git rev-parse HEAD`
 
 echo Refreshing the source checkout...
 git fetch --quiet origin
 UPDATED_REV=`git rev-parse origin/$GIT_BRANCH`
+
+echo trying to check out branch $GIT_BRANCH. 
+git show-ref --verify --quiet refs/heads/$GIT_BRANCH
+if [[ $? == "0" ]] ; then
+    git checkout $GIT_BRANCH
+else
+    git checkout -b $GIT_BRANCH origin/$GIT_BRANCH
+fi
+CURRENT_REV=`git rev-parse HEAD`
+
 
 echo My revision:       $CURRENT_REV
 echo Upstream revision: $UPDATED_REV
