@@ -23,7 +23,7 @@ if [[ -z "${GIT_BRANCH+x}" ]] ; then
     GIT_BRANCH=master
 fi
 
-echo $GIT_BRANCH
+echo Using branch $GIT_BRANCH. To use another branch set its name in the GIT_BRANCH environment variable.
 
 ORIGINAL_PATH=`pwd`
 echo $ORIGINAL_PATH
