@@ -32,7 +32,6 @@ if [[ $DUMP != "1" ]] && [[ $LOG != "1" ]] ; then
    LOG=1
 fi
 
-rm -rf work
 mkdir work
 
 
@@ -49,7 +48,6 @@ do
        if [[ "$tag" == "Name" ]] ; then 
           tag_value=$(echo $line|awk '{print $5}')
          
-	  echo tag $tag_value
           candidate=0
 
 	  if [[ $ALL_INSTANCES -eq 1 ]] ; then 
@@ -71,11 +69,15 @@ do
 	  fi
 	  
 	  if [[ $candidate == "1" ]] ; then
-              echo Grabbing information for $tag_value at $INSTANCE_ADDR
+              echo ==== Grabbing information for $tag_value at $INSTANCE_ADDR
 	      if [[ $LOG -eq 1 ]] ; then
 	          echo Getting logs
-                  ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'cd slave/jboss-as/domain ; rm logs.zip ; zip -r logs.zip log servers/server-*/log/'
+                  ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'cd slave/jboss-as/domain ; rm logs.zip ; zip -qr logs.zip log servers/server-*/log/'
 		  scp -i $SSH_KEY ec2-user@$INSTANCE_ADDR:~/slave/jboss-as/domain/logs.zip work/$tag_value-logs.zip
+		  rm -rf work/$tag_value-logs
+		  mkdir work/$tag_value-logs
+		  unzip -q work/$tag_value-logs.zip -d work/$tag_value-logs
+		  rm work/$tag_value-logs.zip
 	      fi
 	      if [[ $DUMP -eq 1 ]] ; then
                   echo Getting thread dumps
