@@ -111,7 +111,7 @@ do
 	  fi
 	  if [[ $STOP == "1" ]] ; then 
               echo stop slave
-	      remote_pid=$(ssh $slave_addr 'ps aux | grep process-controller | grep java' | grep process-controller | grep java  | awk '{print $2}' | sort | awk 'NR==1{print $1}')
+	      remote_pid=$(ssh  -o "StrictHostKeyChecking no" $slave_addr 'ps aux | grep process-controller | grep java' | grep process-controller | grep java  | awk '{print $2}' | sort | awk 'NR==1{print $1}')
 	      echo $remote_pid
 	      ssh $slave_addr 'kill '$remote_pid''
 	  fi
