@@ -26,6 +26,8 @@ if [[ $STOP != "1" ]] && [[ $START != "1" ]] && [[ $KILL != "1" ]] ; then
     KILL=1
 fi
 
+rm -f ~/.ssh/known_hosts
+
 IFS=$'\n'
 
 if [[ $START == "1" ]] ; then
