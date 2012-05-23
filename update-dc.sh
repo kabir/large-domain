@@ -69,7 +69,8 @@ then
    cd build/target
    rm jboss-as.zip
    zip -qr jboss-as.zip jboss-as
-   unzip -q jboss-as.zip ~/slave
+   rm -rf ~/slave/jboss-as
+   unzip -q jboss-as.zip -d ~/slave
    cd ../..
 fi
 
