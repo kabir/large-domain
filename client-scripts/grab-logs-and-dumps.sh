@@ -8,6 +8,40 @@ if [[ -z "$SSH_KEY" ]] ; then
     SSH_KEY=~/.ssh/kkhan-ec2.pem
 fi
 
+function grab {
+    tag_value=$1
+    INSTANCE_ADDR=$2
+    LOG=$3
+    DUMP=$4
+
+    if [[ $LOG -eq 1 ]] ; then
+        echo Getting logs
+        ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'cd slave/jboss-as/domain ; rm logs.zip ; zip -qr logs.zip log servers/server-*/log/'
+        scp -i $SSH_KEY ec2-user@$INSTANCE_ADDR:~/slave/jboss-as/domain/logs.zip work/$tag_value-logs.zip
+        rm -rf work/$tag_value-logs
+	mkdir work/$tag_value-logs
+	unzip -q work/$tag_value-logs.zip -d work/$tag_value-logs
+	rm work/$tag_value-logs.zip
+    fi
+    if [[ $DUMP -eq 1 ]] ; then
+        echo Getting thread dumps
+        rm -f work/$tag_value-dumps.txt
+        procs=$(ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'ps aux | grep java')
+        for proc in $procs 
+        do
+            command=$(echo $proc |  awk '{print $11}')
+            if [[ $command != "grep" ]] && [[ $command != "bash" ]]; then
+                echo =================== DUMP ============= >> work/$tag_value-dumps.txt
+                echo $proc >> work/$tag_value-dumps.txt
+                echo ======================================  >> work/$tag_value-dumps.txt
+                proc_id=$(echo $proc | awk '{print $2}')
+                ssh  -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'jstack '$proc_id'' >> work/$tag_value-dumps.txt
+           fi
+        done
+    fi
+}
+
+
 ALL_INSTANCES=1
 for var in "$@"
 do
@@ -69,31 +103,7 @@ do
 	  
 	  if [[ $candidate == "1" ]] ; then
               echo ==== Grabbing information for $tag_value at $INSTANCE_ADDR
-	      if [[ $LOG -eq 1 ]] ; then
-	          echo Getting logs
-                  ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'cd slave/jboss-as/domain ; rm logs.zip ; zip -qr logs.zip log servers/server-*/log/'
-		  scp -i $SSH_KEY ec2-user@$INSTANCE_ADDR:~/slave/jboss-as/domain/logs.zip work/$tag_value-logs.zip
-		  rm -rf work/$tag_value-logs
-		  mkdir work/$tag_value-logs
-		  unzip -q work/$tag_value-logs.zip -d work/$tag_value-logs
-		  rm work/$tag_value-logs.zip
-	      fi
-	      if [[ $DUMP -eq 1 ]] ; then
-                  echo Getting thread dumps
-		  rm -f work/$tag_value-dumps.txt
-		  procs=$(ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'ps aux | grep java')
-                  for proc in $procs 
-		  do
-		      command=$(echo $proc |  awk '{print $11}')
-		      if [[ $command != "grep" ]] && [[ $command != "bash" ]]; then
-		          echo =================== DUMP ============= >> work/$tag_value-dumps.txt
-                          echo $proc >> work/$tag_value-dumps.txt
-		          echo ======================================  >> work/$tag_value-dumps.txt
-		          proc_id=$(echo $proc | awk '{print $2}')
-		          ssh  -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'jstack '$proc_id'' >> work/$tag_value-dumps.txt
-		      fi
-		  done
-	      fi
+	      grab $tag_value $INSTANCE_ADDR $LOG $DUMP &
 	  fi
        fi
    fi

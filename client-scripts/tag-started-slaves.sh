@@ -40,5 +40,5 @@ do
     fi
 done
 
-tag $INSTANCE_ID
+tag $INSTANCE_ID &
 
