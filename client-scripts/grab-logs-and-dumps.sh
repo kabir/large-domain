@@ -12,8 +12,7 @@ ALL_INSTANCES=1
 for var in "$@"
 do
     if [[ "$var" == "DC" ]] || [[ "$var" == "dc" ]] ; then
-       #DC temporarily disabled since its server is in another place than standard
-       DC=0
+       DC=1
        ALL_INSTANCES=0
     elif [[ "$var" == "dump" ]] ; then
        DUMP=1
@@ -81,6 +80,7 @@ do
 	      fi
 	      if [[ $DUMP -eq 1 ]] ; then
                   echo Getting thread dumps
+		  rm -f work/$tag_value-dumps.txt
 		  procs=$(ssh -i $SSH_KEY -o "StrictHostKeyChecking no" ec2-user@$INSTANCE_ADDR 'ps aux | grep java')
                   for proc in $procs 
 		  do
