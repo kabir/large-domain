@@ -113,6 +113,7 @@ fi
 #Read the slave entries
 echo "Reading/configuring/starting each slave..."
 
+CURRENT=0
 for line in `ec2-describe-instances --filter "instance-state-code=16" --filter "tag:Type=Slave"`
 do
     if [[ $line == INSTANCE* ]] ; then
@@ -129,10 +130,15 @@ do
 	  echo ----------------------------------------
 	  echo Contacting $slave_host $slave_addr
 
-          if [[ $PARALLEL == "1" ]] ; then
+          if [[ $PARALLEL == "1" ]] && [[ $CURRENT -lt 10 ]]; then
               manageSlave $slave_addr $slave_host & 
           else
               manageSlave $slave_addr $slave_host
+	  fi
+	  if [[ $CURRENT -eq 10 ]] ; then
+	      CURRENT=0
+	  else
+	      CURRENT=$CURRENT+1
 	  fi
        fi
     fi
