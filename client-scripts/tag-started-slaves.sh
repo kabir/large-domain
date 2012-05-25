@@ -4,7 +4,12 @@ echo ========================================================
 echo Tagging all non running servers as Type=Slave, Name=SlaveXX
 echo ========================================================
 
-COUNTER=0
+if [[ -z "${1+x}" ]] ; then
+    COUNTER=0
+else
+    COUNTER=$1
+fi
+
 
 function tag {
     if [[ "$1" != "0" ]] ; then 
@@ -36,7 +41,10 @@ do
        INSTANCE_ID=$(echo $line|awk '{print $2}')
     fi
     if [[ $line == TAG* ]] ; then
-        INSTANCE_ID="0"
+        tag_value=$(echo $line|awk '{print $5}')
+	if [[ "x$tag_value" != "x" ]] ; then 
+            INSTANCE_ID="0"
+        fi
     fi
 done
 
