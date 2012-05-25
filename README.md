@@ -111,6 +111,9 @@ kill - does a killall -9 java on the remote slave instance
 stop - does a kill <PC ProcessId> on each remote slave instance triggering a graceful shutdown
 start - starts the remote DC instance
 
+By default the slaves will be managed sequentially. To make stuff happen in parallel, pass in 'parallel' along with the other commands, e.g.
+$./start-slave.sh kill start parallel
+
 Check the slaves are running
 =============================
 On your local machine:
