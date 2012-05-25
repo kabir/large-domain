@@ -89,6 +89,8 @@ $cd ~/checkouts/large-domain
 $./start-dc.sh
 This starts the DC instance in ~/slave/jboss-as
 
+THE USERNAME/PASSWORD for the DC admin interface is kabir/test.
+
 Start the slaves
 ==============================
 You need a local checkout of git clone git://github.com/kabir/large-domain.git
